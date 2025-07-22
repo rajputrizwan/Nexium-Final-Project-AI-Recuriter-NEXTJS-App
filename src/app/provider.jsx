@@ -2,6 +2,7 @@
 
 import { useContext, useEffect, useState } from "react";
 import { supabase } from "@/services/supabaseClient";
+import { useUserDetailContext } from "@/app/Context/userDetailContext";
 
 function Provider({ children }) {
   const [appUser, setAppUser] = useState(null); // This holds the actual DB user (not Supabase auth user)

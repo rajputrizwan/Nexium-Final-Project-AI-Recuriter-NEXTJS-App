@@ -19,11 +19,11 @@ function Login() {
     <div className="flex items-center justify-center h-screen bg-gray-50">
       <div className="flex flex-col items-center border rounded-2xl p-6 space-y-4 max-w-md w-full">
         <Image
-          src="/logo.png"
+          src="/sidebarLogo.png"
           alt="AiCruiter Logo"
-          width={250}
-          height={50}
-          className="w-[250px]"
+          width={200}
+          height={200}
+          className="w-[150px]"
         />
 
         <Image
