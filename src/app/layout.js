@@ -13,6 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
+  icons: {
+    icon: "/favicon.ico",
+  },
   title: "AI Interview Schedule Voice Agent- Next.js App",
   description: "A Next.js application for AI-powered recruitment",
 };
