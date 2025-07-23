@@ -1,18 +1,19 @@
 "use client";
 
-import React from "react";
+import { usePathname } from "next/navigation";
 import { AppSidebar } from "./_components/AppSidebar";
+import WelcomeContainer from "./dashboard/_components/WelcomeContainer";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-// import WelcomeContainer from "./dashboard/_components/WelcomeContainer";
 
 function DashboardProvider({ children }) {
   return (
-    <SidebarProvider className="bg-gray-100 ">
+    <SidebarProvider className="bg-gray-100 min-h-screen">
       <AppSidebar />
-      <div className="w-full">
-        <SidebarTrigger />
-        {/* <WelcomeContainer /> */}
-        {children}
+
+      <SidebarTrigger />
+      <div className="flex flex-col flex-1 w-full px-5 pt-10">
+        <WelcomeContainer />
+        <div>{children}</div>
       </div>
     </SidebarProvider>
   );
