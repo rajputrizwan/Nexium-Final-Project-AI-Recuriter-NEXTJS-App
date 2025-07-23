@@ -1,31 +1,19 @@
-import { Geist, Geist_Mono } from "next/font/google";
+// app/layout.tsx or app/layout.js
 import "./globals.css";
 import Provider from "./provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata = {
+  title: "AI Interview Schedule Voice Agent - Next.js App",
+  description: "A Next.js application for AI-powered recruitment",
   icons: {
     icon: "/favicon.ico",
   },
-  title: "AI Interview Schedule Voice Agent- Next.js App",
-  description: "A Next.js application for AI-powered recruitment",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="antialiased">
         <Provider>{children}</Provider>
       </body>
     </html>

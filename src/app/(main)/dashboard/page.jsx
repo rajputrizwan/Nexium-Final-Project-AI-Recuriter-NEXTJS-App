@@ -4,7 +4,7 @@ import React from "react";
 import CreateOptions from "./_components/CreateOptions";
 import LatestInterviewList from "./_components/LatestInterviewList";
 
-function Dashboard() {
+function DashboardPage() {
   return (
     <div>
       <CreateOptions />
@@ -13,4 +13,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default DashboardPage;

@@ -10,8 +10,8 @@ function DashboardProvider({ children }) {
     <SidebarProvider className="bg-gray-100 min-h-screen">
       <AppSidebar />
 
-      <SidebarTrigger />
-      <div className="flex flex-col flex-1 w-full px-5 pt-10">
+      {/* <SidebarTrigger /> */}
+      <div className="flex flex-col flex-1 w-full px-5 pt-10 m-2">
         <WelcomeContainer />
         <div>{children}</div>
       </div>
