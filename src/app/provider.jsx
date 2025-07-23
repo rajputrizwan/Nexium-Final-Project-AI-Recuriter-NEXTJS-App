@@ -5,7 +5,7 @@ import { supabase } from "@/services/supabaseClient";
 import { useUserDetailContext } from "@/app/Context/userDetailContext";
 
 function Provider({ children }) {
-  const [appUser, setAppUser] = useState(null); // This holds the actual DB user (not Supabase auth user)
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const createUserIfNotExists = async () => {
@@ -62,7 +62,7 @@ function Provider({ children }) {
       }
 
       // Store the DB user in state
-      setAppUser(dbUser);
+      setUser(dbUser);
     };
 
     createUserIfNotExists();
@@ -70,7 +70,7 @@ function Provider({ children }) {
 
   return (
     <>
-      <useUserDetailContext.Provider value={{ appUser, setAppUser }}>
+      <useUserDetailContext.Provider value={{ user, setUser }}>
         {children}
       </useUserDetailContext.Provider>
     </>
