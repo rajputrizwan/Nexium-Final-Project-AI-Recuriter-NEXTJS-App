@@ -1,4 +1,5 @@
 // app/layout.tsx or app/layout.js
+import { Toaster } from "sonner";
 import "./globals.css";
 import Provider from "./provider";
 
@@ -14,7 +15,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased">
-        <Provider>{children}</Provider>
+        <Provider>
+          {children}
+          <Toaster />
+        </Provider>
       </body>
     </html>
   );
