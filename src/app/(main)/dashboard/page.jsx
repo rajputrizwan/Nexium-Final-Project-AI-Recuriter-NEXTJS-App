@@ -3,14 +3,15 @@
 import React from "react";
 import CreateOptions from "./_components/CreateOptions";
 import LatestInterviewList from "./_components/LatestInterviewList";
+// import WelcomeContainer from "./_components/WelcomeContainer";
 
 function Dashboard() {
   return (
-    <div className="space-y-5">
-      <h2 className="font-bold text-2xl">Dashboard</h2>
-      <div className="max-w-full">
-        <CreateOptions />
-      </div>
+    <div>
+      <h2 className="font-bold text-2xl m-5">Dashboard</h2>
+
+      <CreateOptions />
+
       <LatestInterviewList />
     </div>
   );

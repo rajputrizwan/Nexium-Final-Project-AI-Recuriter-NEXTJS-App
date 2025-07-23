@@ -11,7 +11,7 @@ function DashboardProvider({ children }) {
       <AppSidebar />
       <SidebarTrigger />
 
-      <div className="p-10 space-y-5 m-0">
+      <div className="p-10">
         <WelcomeContainer />
         {children}
       </div>
