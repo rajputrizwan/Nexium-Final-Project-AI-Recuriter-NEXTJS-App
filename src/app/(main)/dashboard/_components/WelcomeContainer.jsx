@@ -12,7 +12,7 @@ function WelcomeContainer() {
   }
 
   return (
-    <div className="bg-white p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border rounded-2xl">
+    <div className="bg-white p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border border-gray-200 rounded-lg mb-5">
       <div className="text-center sm:text-left">
         <h2 className="text-lg font-bold">Welcome Back, {user?.name}</h2>
         <h2 className="text-gray-500">
