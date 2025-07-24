@@ -19,7 +19,7 @@ export async function POST(req) {
     });
 
     const completion = await openai.chat.completions.create({
-      model: "google/gemini-2.5-pro",
+      model: "mistralai/mistral-7b-instruct",
       messages: [
         {
           role: "user",
