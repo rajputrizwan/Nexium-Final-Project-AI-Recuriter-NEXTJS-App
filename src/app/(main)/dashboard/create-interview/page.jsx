@@ -6,15 +6,17 @@ import { Progress } from "@/components/ui/progress";
 import FormContainer from "./_components/FormContainer";
 import QuestionList from "./_components/QuestionList";
 import { toast } from "sonner";
+import InterviewLink from "./_components/InterviewLink";
 
 function CreateInterview() {
   const router = useRouter();
   const [step, setStep] = useState(1);
 
   const [formData, setFromData] = useState();
+
+  const [interviewId, setInterviewId] = useState();
   const onHandleInputChnage = (field, value) => {
     setFromData((prev) => ({ ...prev, [field]: value }));
-
     console.log("FormData", formData);
   };
 
@@ -31,6 +33,11 @@ function CreateInterview() {
     setStep(step + 1);
   };
 
+  const onCreateLink = (interviewId) => {
+    setInterviewId(interviewId);
+    setStep(step + 1);
+  };
+
   return (
     <div className="mt-10 px-4 mb-4 sm:px-12 md:px-20 lg:px-32 xl:px-48 2xl:px-64">
       <div className="flex gap-5 items-center">
@@ -44,7 +51,14 @@ function CreateInterview() {
           GoToNext={() => onGoToNext()}
         />
       ) : step == 2 ? (
-        <QuestionList formData={formData} />
+        <QuestionList
+          formData={formData}
+          onCreateLink={(interview_id) => {
+            onCreateLink(interview_id);
+          }}
+        />
+      ) : step == 3 ? (
+        <InterviewLink interview_id={interviewId} formData={formData} />
       ) : null}
     </div>
   );
