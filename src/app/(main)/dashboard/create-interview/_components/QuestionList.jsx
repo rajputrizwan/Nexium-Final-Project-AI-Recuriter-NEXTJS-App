@@ -6,15 +6,15 @@ import { Button } from "@/components/ui/button";
 import QuestionListContainer from "./QuestionListContainer";
 import { useUser } from "@/app/provider";
 import { v4 as uuidv4 } from "uuid";
+import { supabase } from "@/services/supabaseClient";
 // Optional: safer JSON parsing
-// import JSON5 from "json5";
+import JSON5 from "json5";
 
 function QuestionList({ formData }) {
   const [loading, setLoading] = useState(true);
   const [questionList, setQuestionList] = useState([]);
   const { user } = useUser();
-  const interview_id = uuidv4();
-
+  const [saveLoading, setSaveLoading] = useState(false);
   useEffect(() => {
     if (formData) {
       GenerateQuestionList();
@@ -63,6 +63,8 @@ function QuestionList({ formData }) {
   };
 
   const onFinish = async () => {
+    setSaveLoading(true);
+    const interview_id = uuidv4();
     const { data, error } = await supabase
       .from("Interviews")
       .insert([
@@ -74,6 +76,8 @@ function QuestionList({ formData }) {
         },
       ])
       .select();
+    setSaveLoading(false);
+    console.log(data);
   };
 
   return (
@@ -100,8 +104,19 @@ function QuestionList({ formData }) {
       </div>
 
       <div className="flex mt-5 justify-end">
-        <Button className="px-10" onClick={onFinish} disabled={loading}>
-          {loading ? "Generating..." : "Finish"}
+        <Button
+          className="px-10 flex items-center gap-2"
+          onClick={onFinish}
+          disabled={saveLoading}
+        >
+          {saveLoading ? (
+            <>
+              <Loader2Icon className="animate-spin w-4 h-4" />
+              Saving...
+            </>
+          ) : (
+            "Finish"
+          )}
         </Button>
       </div>
     </div>
