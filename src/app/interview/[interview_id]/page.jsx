@@ -51,7 +51,7 @@ function Interview() {
       .select("*")
       .eq("interview_id", interview_id);
 
-    setInterviewInfo({ userName: userName, interviewData: Interviews });
+    setInterviewInfo({ userName: userName, interviewData: Interviews[0] });
     router.push("/interview/" + interview_id + "/start");
     setJoining(false);
   };
