@@ -3,7 +3,7 @@ import Image from "next/image";
 
 function InterviewHeader() {
   return (
-    <div className="p-4 sm:p-6 md:p-4 shadow-sm flex justify-center sm:justify-start">
+    <div className="p-4 sm:p-6 md:p-4 shadow-md flex justify-center sm:justify-start">
       <Image
         src="/sidebarLogo.png"
         alt="logo"

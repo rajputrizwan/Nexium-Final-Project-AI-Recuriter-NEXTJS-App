@@ -1,47 +1,71 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
-import { Clock, Info, VideoIcon } from "lucide-react";
+import { Clock, Info, LoaderIcon, VideoIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useParams } from "next/navigation";
 import { supabase } from "@/services/supabaseClient";
 import { toast } from "sonner";
+import { InterviewDataContext } from "@/app/Context/interviewDataContext";
+import { useRouter } from "next/navigation";
 
 function Interview() {
   const { interview_id } = useParams();
-  // console.log("Interview-ID : " + interview_id);
-
   const [userName, setUserName] = useState();
-  const [loading, setLoading] = useState(false);
+  const [fetchingInterview, setFetchingInterview] = useState(true);
+  const [joining, setJoining] = useState(false);
+  const [interviewData, setInterviewData] = useState();
+  const { interviewInfo, setInterviewInfo } = useContext(InterviewDataContext);
+  const router = useRouter();
 
   useEffect(() => {
     interview_id && GetInterviewDetails();
   }, [interview_id]);
 
-  const [interviewData, setInterviewData] = useState();
   const GetInterviewDetails = async () => {
-    setLoading(true);
+    setFetchingInterview(true);
     try {
       let { data: Interviews, error } = await supabase
         .from("Interviews")
         .select("jobPosition , jobDescription, Duration, type")
         .eq("interview_id", interview_id);
 
-      console.log(Interviews[0]);
-
-      setInterviewData(Interviews[0]);
-      setLoading(false);
-
-      if (Interviews?.length == 0) {
+      if (Interviews?.length === 0) {
         toast("Incorrect Interview Link");
         return;
       }
+
+      setInterviewData(Interviews[0]);
     } catch (e) {
-      setLoading(false);
       toast("Incorrect Interview Link");
+    } finally {
+      setFetchingInterview(false);
     }
   };
+
+  const onJoinInterview = async () => {
+    setJoining(true);
+    let { data: Interviews, error } = await supabase
+      .from("Interviews")
+      .select("*")
+      .eq("interview_id", interview_id);
+
+    setInterviewInfo({ userName: userName, interviewData: Interviews });
+    router.push("/interview/" + interview_id + "/start");
+    setJoining(false);
+  };
+
+  if (fetchingInterview) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="text-center">
+          <LoaderIcon className="animate-spin w-6 h-6 mx-auto mb-2" />
+          <p className="text-sm text-gray-600">Loading interview details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 my-10">
@@ -106,10 +130,20 @@ function Interview() {
           {/* Join Button */}
           <Button
             className="w-full font-bold flex items-center justify-center gap-2"
-            disabled={loading || !userName}
+            disabled={joining || !userName}
+            onClick={onJoinInterview}
           >
-            <VideoIcon className="w-5 h-5" />
-            Join Interview
+            {joining ? (
+              <>
+                <LoaderIcon className="w-5 h-5 animate-spin" />
+                <span>Joining...</span>
+              </>
+            ) : (
+              <>
+                <VideoIcon className="w-5 h-5" />
+                <span>Join Interview</span>
+              </>
+            )}
           </Button>
         </div>
       </div>
