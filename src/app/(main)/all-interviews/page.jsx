@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/app/provider";
 import { supabase } from "@/services/supabaseClient";
-import InterviewCard from "./InterviewCard";
+import InterviewCard from "../dashboard/_components/InterviewCard";
 
-function LatestInterviewList() {
+function AllIntevriew() {
   const [interviewsList, setInterviewList] = useState([]);
   const { user } = useUser();
 
@@ -22,8 +22,8 @@ function LatestInterviewList() {
       .from("Interviews")
       .select("*")
       .eq("userEmail", user?.email)
-      .order("id", { ascending: false })
-      .limit(6);
+      .order("id", { ascending: false });
+    // .limit(6);
 
     // console.log(Interviews);
 
@@ -36,7 +36,9 @@ function LatestInterviewList() {
 
   return (
     <div className="my-5">
-      <h2 className="font-bold text-2xl pb-5">Previously Created Interviews</h2>
+      <h2 className="font-bold text-2xl pb-5">
+        All Previously Created Interviews
+      </h2>
 
       {interviewsList?.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center gap-4 py-10 bg-white p-5 border border-gray-200 rounded-lg">
@@ -60,4 +62,4 @@ function LatestInterviewList() {
   );
 }
 
-export default LatestInterviewList;
+export default AllIntevriew;
