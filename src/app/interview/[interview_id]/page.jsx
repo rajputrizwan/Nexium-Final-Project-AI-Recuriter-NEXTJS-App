@@ -12,7 +12,8 @@ import { useRouter } from "next/navigation";
 
 function Interview() {
   const { interview_id } = useParams();
-  const [userName, setUserName] = useState();
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [fetchingInterview, setFetchingInterview] = useState(true);
   const [joining, setJoining] = useState(false);
   const [interviewData, setInterviewData] = useState();
@@ -51,7 +52,12 @@ function Interview() {
       .select("*")
       .eq("interview_id", interview_id);
 
-    setInterviewInfo({ userName: userName, interviewData: Interviews[0] });
+    setInterviewInfo({
+      userName: userName,
+      userEmail: userEmail,
+      interviewData: Interviews[0],
+    });
+
     router.push("/interview/" + interview_id + "/start");
     setJoining(false);
   };
@@ -70,15 +76,10 @@ function Interview() {
   return (
     <div className="px-4 sm:px-6 md:px-10 lg:px-12 xl:px-16 my-10">
       <div className="flex flex-col items-center justify-center border rounded-lg bg-white p-5 sm:p-8 md:p-10 max-w-3xl mx-auto w-full shadow-sm">
-        {/* Logo */}
         <Image src="/sidebarLogo.png" alt="logo" width={100} height={100} />
-
-        {/* Title */}
         <h2 className="mt-3 text-center text-lg sm:text-xl font-semibold">
           AI-Powered Interview Platform
         </h2>
-
-        {/* Image */}
         <Image
           className="border rounded-2xl mt-4"
           src="/video-conference.png"
@@ -86,21 +87,16 @@ function Interview() {
           width={280}
           height={160}
         />
-
-        {/* Position Title */}
         <h2 className="font-bold text-lg sm:text-xl mt-4 text-center">
           {interviewData?.jobPosition}
         </h2>
-
-        {/* Duration */}
         <div className="flex gap-2 items-center text-gray-500 mt-2 text-sm">
           <Clock className="h-4 w-4" />
           <span>{interviewData?.Duration}</span>
         </div>
 
-        {/* Form & Info */}
         <div className="w-full mt-6 space-y-6 max-w-lg mx-auto">
-          {/* Input field */}
+          {/* Full Name Input */}
           <div className="w-full flex flex-col gap-2">
             <label htmlFor="fullName" className="text-sm font-medium">
               Enter your full name
@@ -108,11 +104,26 @@ function Interview() {
             <Input
               id="fullName"
               placeholder="e.g. John Smith"
+              value={userName}
               onChange={(e) => setUserName(e.target.value)}
             />
           </div>
 
-          {/* Info box */}
+          {/* Email Input Field */}
+          <div className="w-full flex flex-col gap-2">
+            <label htmlFor="email" className="text-sm font-medium">
+              Enter your email address
+            </label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="e.g. john@example.com"
+              value={userEmail}
+              onChange={(e) => setUserEmail(e.target.value)}
+            />
+          </div>
+
+          {/* Info Box */}
           <div className="p-4 bg-blue-100 flex gap-4 rounded-lg w-full">
             <Info className="text-primary mt-1" />
             <div>
@@ -127,10 +138,10 @@ function Interview() {
             </div>
           </div>
 
-          {/* Join Button */}
+          {/* Join Interview Button */}
           <Button
             className="w-full font-bold flex items-center justify-center gap-2"
-            disabled={joining || !userName}
+            disabled={joining || !userName || !userEmail}
             onClick={onJoinInterview}
           >
             {joining ? (

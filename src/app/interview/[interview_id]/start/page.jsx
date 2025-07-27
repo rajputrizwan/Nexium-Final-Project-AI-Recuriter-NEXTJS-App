@@ -1,17 +1,26 @@
 "use client";
 
 import { InterviewDataContext } from "@/app/Context/interviewDataContext";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Timer, Mic, Video, PhoneOff } from "lucide-react";
 import Image from "next/image";
 import Vapi from "@vapi-ai/web";
 import AlertConfirmation from "./_components/AlertConfirmation";
 import { toast } from "sonner";
+import axios from "axios";
+import { supabase } from "@/services/supabaseClient";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+
+const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY);
 
 function StartInterview() {
   const { interviewInfo } = useContext(InterviewDataContext);
-  const vapi = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY);
   const [activeUser, setActiveUser] = useState(false);
+  const [conversation, setConversation] = useState();
+  const { interview_id } = useParams();
+  const router = useRouter();
+  // const [callEnd, setCallEnd] = useState();
 
   useEffect(() => {
     interviewInfo && startCall();
@@ -79,19 +88,96 @@ Key Guidelines:
     vapi.start(assistantOptions);
   };
 
-  const stopInterview = () => vapi.stop();
+  const stopInterview = async () => {
+    try {
+      vapi.stop();
+      toast("Ending Interview...");
+      await GenerateFeedback(); // Explicitly call feedback logic
+    } catch (error) {
+      console.error("Error ending interview:", error);
+      toast.error("Failed to end interview. Please try again.");
+    }
+  };
 
   vapi.on("call-start", () => {
+    console.log("Call has started.");
     toast("Call Connected...");
-    console.log("Call started");
+  });
+
+  vapi.on("speech-start", () => {
+    console.log("Assistant speech has started.");
     setActiveUser(false);
   });
 
-  vapi.on("call-end", () => {
-    toast("Interview Ended...");
-    console.log("Call ended");
+  vapi.on("speech-end", () => {
+    console.log("Assistant speech has ended.");
     setActiveUser(true);
   });
+
+  vapi.on("call-end", () => {
+    console.log("Call has ended.");
+    toast("Interview Ended");
+    GenerateFeedback(); // still keep this for safety
+  });
+
+  // vapi.on("message", (message) => {
+  //   console.log(message?.conversation);
+  //   setConversation(message?.conversation);
+  // });
+
+  useEffect(() => {
+    const handleMessage = (message) => {
+      console.log("Message:", message);
+      if (message?.conversation) {
+        const convoString = JSON.stringify(message.conversation);
+        console.log("Conversation string:", convoString);
+        setConversation(convoString);
+      }
+    };
+
+    vapi.on("message", handleMessage);
+
+    // Clean up the listener
+    return () => {
+      vapi.off("message", handleMessage);
+      vapi.off("call-start", () => console.log("END"));
+      vapi.off("speech-start", () => console.log("END"));
+      vapi.off("call-end", () => console.log("END"));
+      vapi.off("speech-start", () => console.log("END"));
+    };
+  }, []);
+
+  const GenerateFeedback = async () => {
+    try {
+      if (!conversation) {
+        console.warn("No conversation data found.");
+        return;
+      }
+
+      const result = await axios.post("/api/ai-feedback", { conversation });
+      const Content = result.data.content;
+      const FINAL_CONTENT = Content.replace(/```json|```/g, "").trim();
+      const feedback = JSON.parse(FINAL_CONTENT);
+
+      const { data, error } = await supabase
+        .from("interview-feedback")
+        .upsert({
+          userName: interviewInfo?.userName,
+          userEmail: interviewInfo?.userEmail,
+          interview_id: interview_id,
+          feedback,
+          recommended: false,
+        })
+        .select();
+
+      if (error) throw error;
+
+      router.replace("/interview/" + interview_id + "/completed");
+    } catch (err) {
+      console.error("Feedback generation failed:", err);
+      toast.error("Feedback generation failed. Try again.");
+    }
+  };
 
   return (
     <div className="bg-gray-200 min-h-screen flex flex-col justify-between">
@@ -132,21 +218,21 @@ Key Guidelines:
 
         {/* User */}
         <div className="rounded-xl shadow-md bg-white/80 backdrop-blur p-6 flex flex-col items-center justify-center border border-blue-100">
-          <div className="w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center text-blue-600 text-4xl font-bold border-4 border-blue-300">
-            {/* Render user's initial if available */}
-            <div className="relative">
-              {!activeUser && (
-                <>
-                  <span className="absolute top-[44%] left-[50%] w-28 h-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500 opacity-20 animate-ping z-0" />
-                </>
-              )}
+          <div className="relative flex items-center justify-center w-40 h-40">
+            {/* Pulse ring behind */}
+            {activeUser && (
+              <span className="absolute top-[50%] left-[50%] w-28 h-28 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500 opacity-20 animate-ping z-0" />
+            )}
+
+            {/* User avatar */}
+            <div className="relative z-10 w-40 h-40 rounded-full bg-gray-300 flex items-center justify-center text-blue-600 text-4xl font-bold border-4 border-blue-300">
               {interviewInfo?.userName
                 ? interviewInfo.userName.charAt(0).toUpperCase()
                 : "U"}
             </div>
           </div>
           <h3 className="mt-4 text-base md:text-lg font-semibold text-blue-800">
-            {interviewInfo?.userName ? interviewInfo?.userName : "You"}
+            {interviewInfo?.userName ? interviewInfo.userName : "You"}
           </h3>
         </div>
       </div>
@@ -163,7 +249,8 @@ Key Guidelines:
         <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full flex items-center gap-2 text-sm shadow">
           <Video className="w-5 h-5" /> Camera
         </button>
-        <AlertConfirmation stopInterview={() => stopInterview}>
+
+        <AlertConfirmation stopInterview={() => stopInterview()}>
           <button className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-full flex items-center gap-2 text-sm shadow">
             <PhoneOff className="w-5 h-5" /> Leave
           </button>
