@@ -99,31 +99,79 @@ Key Guidelines:
     }
   };
 
-  vapi.on("call-start", () => {
-    console.log("Call has started.");
-    toast("Call Connected...");
-  });
+  // vapi.on("call-start", () => {
+  //   console.log("Call has started.");
+  //   toast("Call Connected...");
+  // });
 
-  vapi.on("speech-start", () => {
-    console.log("Assistant speech has started.");
-    setActiveUser(false);
-  });
+  // vapi.on("speech-start", () => {
+  //   console.log("Assistant speech has started.");
+  //   setActiveUser(false);
+  // });
 
-  vapi.on("speech-end", () => {
-    console.log("Assistant speech has ended.");
-    setActiveUser(true);
-  });
+  // vapi.on("speech-end", () => {
+  //   console.log("Assistant speech has ended.");
+  //   setActiveUser(true);
+  // });
 
-  vapi.on("call-end", () => {
-    console.log("Call has ended.");
-    toast("Interview Ended");
-    GenerateFeedback(); // still keep this for safety
-  });
+  // vapi.on("call-end", () => {
+  //   console.log("Call has ended.");
+  //   toast("Interview Ended");
+  //   GenerateFeedback(); // still keep this for safety
+  // });
 
   // vapi.on("message", (message) => {
   //   console.log(message?.conversation);
   //   setConversation(message?.conversation);
   // });
+
+  useEffect(() => {
+    const handleCallStart = () => {
+      console.log("Call has started.");
+      toast("Call Connected...");
+    };
+
+    const handleSpeechStart = () => {
+      console.log("Assistant speech has started.");
+      setActiveUser(false);
+    };
+
+    const handleSpeechEnd = () => {
+      console.log("Assistant speech has ended.");
+      setActiveUser(true);
+    };
+
+    const handleCallEnd = () => {
+      console.log("Call has ended.");
+      toast("Interview Ended");
+      GenerateFeedback();
+    };
+
+    const handleMessage = (message) => {
+      console.log("Message:", message);
+      if (message?.conversation) {
+        const convoString = JSON.stringify(message.conversation);
+        console.log("Conversation string:", convoString);
+        setConversation(convoString);
+      }
+    };
+
+    // Attach listeners
+    vapi.on("call-start", handleCallStart);
+    vapi.on("speech-start", handleSpeechStart);
+    vapi.on("speech-end", handleSpeechEnd);
+    vapi.on("call-end", handleCallEnd);
+    vapi.on("message", handleMessage);
+
+    // Cleanup
+    return () => {
+      vapi.off("call-start", handleCallStart);
+      vapi.off("speech-start", handleSpeechStart);
+      vapi.off("speech-end", handleSpeechEnd);
+      vapi.off("call-end", handleCallEnd);
+      vapi.off("message", handleMessage);
+    };
+  }, []);
 
   useEffect(() => {
     const handleMessage = (message) => {
@@ -155,9 +203,27 @@ Key Guidelines:
       }
 
       const result = await axios.post("/api/ai-feedback", { conversation });
-      const Content = result.data.content;
-      const FINAL_CONTENT = Content.replace(/```json|```/g, "").trim();
-      const feedback = JSON.parse(FINAL_CONTENT);
+
+      let content = result.data.content;
+
+      console.log("🧪 Raw feedback content:", content);
+
+      // Remove markdown if present
+      content = content.replace(/```json|```/g, "").trim();
+
+      // Extract the first valid JSON or JS object
+      const match = content.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+      if (!match) throw new Error("No valid JSON structure found in feedback");
+
+      let feedback;
+      try {
+        feedback = JSON.parse(match[0]); // Try standard parsing
+      } catch (err) {
+        console.warn("⚠️ JSON.parse failed. Falling back to eval().");
+        feedback = eval("(" + match[0] + ")"); // Fallback for JS-style objects
+      }
+
+      console.log("✅ Parsed feedback object:", feedback);
 
       const { data, error } = await supabase
         .from("interview-feedback")
@@ -170,11 +236,15 @@ Key Guidelines:
         })
         .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error("❌ Supabase error:", error);
+        throw error;
+      }
 
+      toast.success("✅ Feedback saved!");
       router.replace("/interview/" + interview_id + "/completed");
     } catch (err) {
-      console.error("Feedback generation failed:", err);
+      console.error("❌ Feedback generation failed:", err);
       toast.error("Feedback generation failed. Try again.");
     }
   };
