@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Copy, Send } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 function InterviewCard({ interview, viewDetail = false }) {
   const url =
@@ -69,13 +70,17 @@ function InterviewCard({ interview, viewDetail = false }) {
           </Button>
         </div>
       ) : (
-        <Button
-          className="mt-5 w-full flex justify-between items-center"
-          variant="outline"
+        <Link
+          href={"/scheduled-interviews/" + interview?.interview_id + "/details"}
         >
-          <span>View Detail</span>
-          <ArrowRight className="ml-2" />
-        </Button>
+          <Button
+            className="mt-5 w-full flex justify-between items-center"
+            variant="outline"
+          >
+            <span>View Detail</span>
+            <ArrowRight className="ml-2" />
+          </Button>
+        </Link>
       )}
     </div>
   );
