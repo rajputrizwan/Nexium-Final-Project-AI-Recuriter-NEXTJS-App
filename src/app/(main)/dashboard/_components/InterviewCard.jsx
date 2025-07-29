@@ -6,22 +6,22 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 function InterviewCard({ interview, viewDetail = false }) {
-  const url =
-    process.env.NEXT_PUBLIC_HOST_URL + "/interview/" + interview?.interview_id;
+  const relativePath = "/interview/" + interview?.interview_id;
 
   const copyLink = () => {
+    const fullUrl = `${window.location.origin}${relativePath}`;
     navigator.clipboard
-      .writeText(url)
+      .writeText(fullUrl)
       .then(() => toast.success("Link copied to clipboard!"))
       .catch(() => toast.error("Failed to copy link"));
   };
 
   const onSend = () => {
-    const interviewUrl = `${process.env.NEXT_PUBLIC_HOST_URL}/interview/${interview?.interview_id}`;
+    const fullUrl = `${window.location.origin}${relativePath}`;
     const recipient = "mrizwan2702@gmail.com";
     const subject = encodeURIComponent("AICruiter Interview Link");
     const body = encodeURIComponent(
-      `Hi,\n\nHere's the interview link:\n${interviewUrl}`
+      `Hi,\n\nHere's the interview link:\n${fullUrl}`
     );
 
     window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
@@ -70,9 +70,7 @@ function InterviewCard({ interview, viewDetail = false }) {
           </Button>
         </div>
       ) : (
-        <Link
-          href={"/scheduled-interviews/" + interview?.interview_id + "/details"}
-        >
+        <Link href={`/scheduled-interviews/${interview?.interview_id}/details`}>
           <Button
             className="mt-5 w-full flex justify-between items-center"
             variant="outline"

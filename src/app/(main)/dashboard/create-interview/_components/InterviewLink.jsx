@@ -7,16 +7,24 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 function InterviewLink({ interview_id, formData }) {
-  const url = process.env.NEXT_PUBLIC_HOST_URL + "/interview/" + interview_id;
-
+  // Dynamically construct full URL on client side
   const getInterviewUrl = () => {
-    return url;
+    if (typeof window !== "undefined") {
+      return `${window.location.origin}/interview/${interview_id}`;
+    }
+    return `/interview/${interview_id}`; // fallback for SSR (won't break)
   };
 
   const onCopyLink = async () => {
-    await navigator.clipboard.writeText(url);
-    toast("Link Copied");
+    try {
+      const url = getInterviewUrl();
+      await navigator.clipboard.writeText(url);
+      toast("Link Copied");
+    } catch (error) {
+      toast.error("Failed to copy link");
+    }
   };
+
   return (
     <div className="flex flex-col items-center justify-center mt-10">
       <Image
@@ -40,7 +48,7 @@ function InterviewLink({ interview_id, formData }) {
         </div>
         <div className="mt-3 flex gap-3 items-center">
           <Input defaultValue={getInterviewUrl()} disabled={true} />
-          <Button onClick={() => onCopyLink()}>
+          <Button onClick={onCopyLink}>
             <Copy /> Copy Link
           </Button>
         </div>
