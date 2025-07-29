@@ -1,7 +1,10 @@
-// app/layout.tsx or app/layout.js
+// app/layout.js
 import { Toaster } from "sonner";
 import "./globals.css";
 import Provider from "./provider";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import LayoutWrapper from "@/components/LayoutWrapper"; // new client wrapper
 
 export const metadata = {
   title: "AI Interview Schedule Voice Agent - Next.js App",
@@ -16,7 +19,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="antialiased">
         <Provider>
-          {children}
+          <LayoutWrapper>{children}</LayoutWrapper>
           <Toaster />
         </Provider>
       </body>
