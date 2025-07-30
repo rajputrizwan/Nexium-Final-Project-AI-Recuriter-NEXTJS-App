@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabaseClient";
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -18,10 +18,12 @@ export default function Navbar() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setIsLoggedIn(!!user);
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
     };
 
     checkAuth();
@@ -29,7 +31,7 @@ export default function Navbar() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_, session) => {
-      setIsLoggedIn(!!session?.user);
+      setUser(session?.user || null);
     });
 
     return () => subscription.unsubscribe();
@@ -37,8 +39,10 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    setIsLoggedIn(false);
+    setUser(null);
   };
+
+  const isLoggedIn = !!user;
 
   return (
     <nav
@@ -56,11 +60,11 @@ export default function Navbar() {
           {/* Desktop Menu */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-8">
-              <NavLink href="/services-page" label="Services" />
+              <NavLink href="/services" label="Services" />
               <NavLink href="/contact" label="Contact us" />
               {isLoggedIn && <NavLink href="/dashboard" label="Dashboard" />}
               {isLoggedIn ? (
-                <UserDropdown onSignOut={handleSignOut} />
+                <UserDropdown user={user} onSignOut={handleSignOut} />
               ) : (
                 <Link
                   href="/auth"
@@ -98,7 +102,6 @@ export default function Navbar() {
               label="Contact us"
               onClick={() => setIsMenuOpen(false)}
             />
-            {/* Interviews link removed */}
 
             {isLoggedIn ? (
               <>
@@ -163,12 +166,22 @@ function MobileNavLink({ href, label, onClick }) {
   );
 }
 
-// UserDropdown
-function UserDropdown({ onSignOut }) {
+// ✅ Updated UserDropdown
+function UserDropdown({ user, onSignOut }) {
+  const avatar = user?.user_metadata?.avatar_url;
+
   return (
     <div className="relative group">
-      <button className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors">
-        <User size={18} className="text-gray-800" />
+      <button className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors overflow-hidden">
+        {avatar ? (
+          <img
+            src={avatar}
+            alt="User Avatar"
+            className="w-full h-full object-cover rounded-full"
+          />
+        ) : (
+          <User size={18} className="text-gray-800" />
+        )}
       </button>
       <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-200">
         <Link
