@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
-import { supabase } from "@/services/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import { useUserDetailContext } from "@/app/Context/userDetailContext";
 
 function Provider({ children }) {

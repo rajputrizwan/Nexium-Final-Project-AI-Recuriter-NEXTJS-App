@@ -4,7 +4,7 @@ import { Plus, Video } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/app/provider";
-import { supabase } from "@/services/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import InterviewCard from "../dashboard/_components/InterviewCard";
 
 function AllIntevriew() {

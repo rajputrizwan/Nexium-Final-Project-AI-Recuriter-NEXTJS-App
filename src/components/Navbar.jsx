@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Menu, X, User } from "lucide-react";
-import { supabase } from "@/services/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

@@ -5,7 +5,7 @@ import { Clock, Info, LoaderIcon, VideoIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useParams } from "next/navigation";
-import { supabase } from "@/services/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import { toast } from "sonner";
 import { InterviewDataContext } from "@/app/Context/interviewDataContext";
 import { useRouter } from "next/navigation";

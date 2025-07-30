@@ -8,7 +8,7 @@ import Vapi from "@vapi-ai/web";
 import AlertConfirmation from "./_components/AlertConfirmation";
 import { toast } from "sonner";
 import axios from "axios";
-import { supabase } from "@/services/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 

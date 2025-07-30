@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import QuestionListContainer from "./QuestionListContainer";
 import { useUser } from "@/app/provider";
 import { v4 as uuidv4 } from "uuid";
-import { supabase } from "@/services/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 
 function QuestionList({ formData, onCreateLink }) {
   const [loading, setLoading] = useState(true);

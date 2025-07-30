@@ -1,5 +1,5 @@
 // "use client";
-// import { supabase } from "@/services/supabaseClient";
+// import { supabase } from "@/lib/supabaseClient";
 // import React, { useEffect, useState } from "react";
 // import { useUser } from "@/app/provider";
 // import InterviewCard from "../dashboard/_components/InterviewCard";
@@ -128,7 +128,7 @@
 // export default ScheduledInterviews;
 
 "use client";
-import { supabase } from "@/services/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import React, { useEffect, useState } from "react";
 import { useUser } from "@/app/provider"; // Assuming this hook provides the user object
 import InterviewCard from "../dashboard/_components/InterviewCard";

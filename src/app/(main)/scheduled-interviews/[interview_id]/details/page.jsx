@@ -2,7 +2,7 @@
 import { useParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/app/provider";
-import { supabase } from "@/services/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import InterviewDetailContainer from "./_components/InterviewDetailContainer";
 import CandidatesList from "./_components/CandidatesList";
 

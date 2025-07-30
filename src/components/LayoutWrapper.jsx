@@ -12,7 +12,7 @@ export default function LayoutWrapper({ children }) {
     "/auth",
     "/login",
     "/signup",
-    "/interview-room",
+    "/interview",
     "/dashboard",
     "/scheduled-interviews",
     "/all-interviews",
